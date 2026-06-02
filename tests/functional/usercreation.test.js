@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
  import { LoginPage } from '../../pages/LoginPage.js';
 
  import { PIMPage } from '../../pages/PIMPage.js';
+import { exec } from 'node:child_process';
+import { hasSubscribers } from 'node:diagnostics_channel';
 
 
 
@@ -29,6 +31,16 @@ import { test, expect } from '@playwright/test';
  await pimPage.createEmployeeWithLoginDetails('John', 'steve', 'Doe', 'john.doe123aa', 'Password@123');
 
                 await   page.waitForTimeout(5000);
+
+               
+               
+                await  pimPage.save();
+
+
+
+                await expect(pimPage.getSuccessMessage().filter({hasText: 'Successfully Saved'})).toBeVisible();
+
+                await page.waitForTimeout(5000);
          })
 
         

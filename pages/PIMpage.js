@@ -37,18 +37,27 @@ export class PIMPage {
 
 
 
-        this.createLoginDetailsCheckbox =
-         page.locator('.oxd-switch-input');
+       // this.createLoginDetailsCheckbox =page.locator("input[type='checkbox']");
+
+                this.createLoginDetailsCheckbox =page.locator("//span[@class='oxd-switch-input oxd-switch-input--active --label-right']");
+
+
+
+      //  this.createLoginDetailscheckbox= page.getByRole('checkbox', {name:'Create Login Details'});
 
 
     //     this.createLoginDetailsToggle =
     // page.getByText('Create Login Details');
+
+            this.successmessage =  page.locator('.oxd-toast-content');
+
 
 
         this.username =
             page.locator(
                 "//label[text()='Username']/parent::div/following-sibling::div//input"
             );
+
 
         this.password =
             page.locator(
@@ -75,7 +84,7 @@ export class PIMPage {
 //await this.page.waitForLoadState('networkidle', { timeout: 60000 });
 
 
-        await this.page.waitForUrl(/.*viewEmployeeList.*/)
+        await this.page.waitForURL(/.*viewEmployeeList.*/)
 
         await this.addEmployeeBtn.click();
 
@@ -161,5 +170,13 @@ await this.createLoginDetailsCheckbox.click();
     async save() {
 
         await this.saveButton.click();
+
+         console.log('Save button clicked');
     }
+
+
+      getSuccessMessage(){
+
+         return this.successmessage;
+     }
 }
