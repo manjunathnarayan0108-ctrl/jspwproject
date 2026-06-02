@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "username": "Admin",
+    "password": "admin123",
+    "expectedResult": "PASS",
+    "actualResult": "FAIL"
+  },
+  {
+    "id": 2,
+    "username": "Admon",
+    "password": "admin123",
+    "expectedResult": "FAIL",
+    "actualResult": "PASS"
+  },
+  {
+    "id": 3,
+    "username": "Admin",
+    "password": "admin1234",
+    "expectedResult": "FAIL",
+    "actualResult": "PASS"
+  }
+]
