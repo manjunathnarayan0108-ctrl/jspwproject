@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { findSourceMap } from "node:module";
+
 
 export class PIMPage {
 
@@ -83,100 +83,117 @@ export class PIMPage {
 
 //await this.page.waitForLoadState('networkidle', { timeout: 60000 });
 
-
         await this.page.waitForURL(/.*viewEmployeeList.*/)
 
         await this.addEmployeeBtn.click();
 
         await expect(this.firstName).toBeVisible({ timeout: 60000 });
 
-
-       
-
-
-
-
-    }
-
-    async createEmployee(
-        firstName,
-        middleName,
-        lastName
-    ) {
-
-        await this.firstName.fill(firstName);
-
-        await this.middleName.fill(middleName);
-
-        await this.lastName.fill(lastName);
     }
 
 
-    async createEmployeeWithLoginDetails(
-        firstName,
-        middleName,
-        lastName,
-        username,
-        password
-    )
-    
-    {
+          
+     async   createEmployee(data) {
+
+            if(data["FirstName"]) {
+
+                await this.firstName.fill(data["FirstName"]);
+            }
 
 
-         console.log(`firstname: ${firstName}  middlename :${middleName} lastname:${lastName} username:${username} password:${password}`)
-        await this.createEmployee(
-            firstName,
-            middleName,
-            lastName
-        );
+            if(data["MiddleName"]) {
 
-            // await this.page.waitForSelector('.oxd-form-loader', { state: 'hidden' });
-
-       // await expect(this.page.locator('.oxd-form-loader')).toBeHidden({ timeout: 15000 });
-  //   await this.page.waitForSelector('.oxd-form-loader', { state: 'detached', timeout: 60000 });
-
-//         const loader = this.page.locator('.oxd-form-loader');
-// console.log('loader count:', await loader.count());
-// if (await loader.count() > 0) {
-//   console.log('visible:', await loader.isVisible());
-//   console.log(await loader.evaluate(e => getComputedStyle(e).cssText));
-// }
+                await this.middleName.fill(data["MiddleName"]);
+            }
 
 
-// await this.page.waitForFunction(() => {
-//   const span = document.querySelector('.oxd-switch-input');
-//   return !span || window.getComputedStyle(span).pointerEvents === 'none';
-// }, { timeout: 60000 });
-// await this.createLoginDetailsCheckbox.check({ timeout: 60000 });
+             if(data["LastName"]) {
+
+                await this.lastName.fill(data["LastName"]);
+             }
+                  
+
+                   if(data["Toggle On"]==="Yes") {
+                            
+
+                    await this.createLoginDetailsCheckbox.click();
+
+                     
+                    if(data["Username"]) {
+
+                        await  this.username.fill(data["Username"]);
+                    }
 
 
+             if(data["Password"]) {
 
-            //await expect(this.createLoginDetailsCheckbox).toBeVisible();
-
-await this.createLoginDetailsCheckbox.click();
-
-
+                await this.password.fill(data["Password"]);
+             }
 
 
-        await this.username.fill(username);
+             if(data["ConfirmPassword"]) {
 
-        await this.password.fill(password);
-
-        await this.confirmPassword.fill(password);
-    }
-
-
-
-    async save() {
-
-        await this.saveButton.click();
-
-         console.log('Save button clicked');
-    }
-
-
-      getSuccessMessage(){
-
-         return this.successmessage;
+                await this.confirmPassword.fill(data["ConfirmPassword"]);
+             }            
      }
+
+                         
+       if(data["Upload image"] &&  data["Upload image"].trim()!==""){
+
+        await this.fileUpload.setInputFiles(data["Upload image"]);
+
+       }
+
+
+     
+
+    
 }
+
+   async save() {
+
+
+    await this.saveButton.click();
+
+
+        }
+
+
+        // async  getToastMessage() {
+
+
+        //     return (
+
+        //         await this.successmessage.textContent()
+        //     )?.trim ();
+        // }
+
+
+         async getActualResult() {
+
+             
+            if(await this.successmessage.filter({hasText:'Successfully Saved'}).isVisible()) {
+                
+                return await this.toastMessage.textContent();
+
+         }    
+
+
+         
+
+            const errors =this.page.locator('.oxd-input-field-error-message');
+
+           
+             
+             if(await errors.count()>0) {
+
+
+                return await errors.first().allTextContents();
+             }
+ 
+
+              
+         
+            }
+
+}   

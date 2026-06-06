@@ -1,14 +1,20 @@
 import { test, expect } from "@playwright/test";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getExcelData, writeExcelData } from "../excelutil/excelutils.js";
-import { LoginPage } from "../pages/loginPage.js";
+import { getExcelData, writeExcelData } from "../../excelutil/excelutils.js";
+import { LoginPage } from "../../pages/LoginPage.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dataPath = path.resolve(__dirname, "../datasheet.xlsx");
 
-const testCases = await getExcelData(dataPath);
+ console.log("Current Directory:", __dirname); // Debugging line to verify the current directory
+const dataPath = path.resolve(__dirname, "../../datasheet.xlsx");
+
+
+ console.log("Data Path:", dataPath); // Debugging line to verify the path to the Excel file
+
+const testCases = getExcelData(dataPath);
+
 
 // 1. Changed 'one' to a safe, explicit string description
 test.describe.serial('OrangeHRM Login Data Driven Tests', () => {
