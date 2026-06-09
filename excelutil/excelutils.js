@@ -1,120 +1,96 @@
-import test from "@playwright/test";
 import ExcelJs from "exceljs";
 
-
-
-export  async function writeExcelData(filepath, rowNumber, data,cell) {
-
-    // create workbook instance and read the file form the filepath
-    const workbook = new ExcelJs.Workbook();
-    await workbook.xlsx.readFile(filepath);
-    
-    //get worksheet from the workbook and update the cell value in memory
-    const worksheet = workbook.getWorksheet(1);
-    
-    // Update the cell value in memory
-    worksheet.getRow(rowNumber).getCell(cell).value = data;
-    
-    // 3. CRITICAL MISSING LINE: Save the memory changes back to the physical file!
-    await workbook.xlsx.writeFile(filepath);
-}
-
-
-     
-export async function getExcelData(filepath,sheetName) {
+export async function getExcelData(filePath, sheetName) {
 
     const workbook = new ExcelJs.Workbook();
 
-     await workbook.xlsx.readFile(filepath);
+    await workbook.xlsx.readFile(filePath);
 
-     const worksheet=  workbook.getWorksheet(sheetName.trim());
+    const worksheet =
+        workbook.getWorksheet(sheetName.trim());
 
-         
-       const data= [];
+    const data = [];
+    const headers = [];
 
-       const headers= [];
+    worksheet.getRow(1).eachCell((cell) => {
 
-       worksheet.getRow(1).eachCell((cell,columnNumber)=>{
+        headers.push(cell.value);
+    });
 
-        headers[columnNumber]= cell.value;
+    worksheet.eachRow((row, rowNumber) => {
 
-         headers.push(cell.value);
-       })
+        if (rowNumber === 1) return;
 
+        const rowData = {
+            rowNumber
+        };
 
-             const rowData= {
+        headers.forEach((header, index) => {
 
-                    rowNumber: rowNumber,
-                  };
+            if (
+                header === "Actual Result" ||
+                header === "Status" ||
+                header === "Test case status"
+            ) {
+                return;
+            }
 
-        worksheet.eachRow((row,rowNumber)=>{
+            rowData[header] =
+                row.getCell(index + 1).value;
+        });
 
-             if(rowNumber===1) return;
+        data.push(rowData);
+    });
 
-
-              headers.forEach((header,index)=>{
-
-                 if(header==='S.No' ||header==='Actual Result'||header==='Expected Result'||header==='Status'||
-                    header==='Test case status'){
-                    return;
-                 }
-                     rowData[header]= row.getCell(index+1).value;
-              })
-             
-        })
-
-         data.push(rowData);
-          
-          return data;
-
-
+    return data;
 }
 
 
-         export async function writeExcelData(filePath,sheetName,rowNumber,actualResult,testCaseResult) {
 
-              const workBook = new ExcelJs.Workbook();
+export async function writeExcelData(
+    filePath,
+    sheetName,
+    rowNumber,
+    actualResult,
+    testCaseResult
+) {
 
-              await workBook.xlsx.readFile(filePath);
+    const workBook = new ExcelJs.Workbook();
 
+    await workBook.xlsx.readFile(filePath);
 
-               const workSheet= workBook.getWorksheet(sheetName.trim());
+    const workSheet =
+        workBook.getWorksheet(sheetName.trim());
 
-              let headerRow = workSheet.getRow(1);
+    const headerRow =
+        workSheet.getRow(1);
 
+    let actualResultColumn;
+    let statusColumn;
 
-               let actualResultColumn;
+    headerRow.eachCell((cell, columnNumber) => {
 
-               let statusColumn;
-               
-                headerRow.eachCell((cell,columnNumber)=>{
+        if (cell.value === "Actual Result") {
 
+            actualResultColumn = columnNumber;
+        }
 
-                     if(cell.value==='Actual Result'){
+        if (cell.value === "Test case status") {
 
-                        actualResultColumn= columnNumber;
-                     } 
-                      
-                      if(cell.value==='Test case status'){
+            statusColumn = columnNumber;
+        }
+    });
 
-                        statusColumn= columnNumber;
-                      }
+    workSheet
+        .getRow(rowNumber)
+        .getCell(actualResultColumn)
+        .value = actualResult;
 
+    workSheet
+        .getRow(rowNumber)
+        .getCell(statusColumn)
+        .value = testCaseResult;
 
-                       workSheet
-                       .getRow(rowNumber)
-                       .getCell(actualResultColumn)
-                       .value= actualResult;
-
-
-                       workSheet
-                       . getCell(rowNumber,statusColumn)
-                       .value=testCaseResult;
-
-
-                        await workBook.xlsx.writeFile(filePath);
-        
-                })
-         }
-
+    await workBook.xlsx.writeFile(filePath);
+}
 

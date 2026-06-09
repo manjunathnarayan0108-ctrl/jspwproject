@@ -19,6 +19,14 @@
  }  
 
 
+  export function generateRandomNumber() {
+
+    return Math.floor(1000+Math.random() *9000); // Generates a random number between 0 and 9999
+
+  }
+
+
+
     function generateRandomText(length) {
 
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

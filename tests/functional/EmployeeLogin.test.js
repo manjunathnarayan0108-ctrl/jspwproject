@@ -5,7 +5,6 @@ import {test,expect} from '@playwright/test';
 import { LoginPage } from '../../pages/LoginPage.js';
 
 
-// import { PIMpage } from '../../pages/PIMpage.js';
 
 
 

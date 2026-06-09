@@ -4,6 +4,9 @@ import { test, expect } from '@playwright/test';
 
  import { PIMPage } from '../../pages/PIMPage.js';
 
+  test.setTimeout(200000);
+
+
 
  import {
 
@@ -24,7 +27,7 @@ import { fileURLToPath } from 'url';
    console.log("Current Directory:", __dirname); // Debugging line to verify the current directory
 
       
-      const dataPath= path.resolve(_dirname,'../../datasheet.xlsx');
+      const dataPath= path.resolve(__dirname,'../../datasheet.xlsx');
 
          console.log("Data Path:", dataPath); // Debugging line to verify the path to the Excel file
            
@@ -44,101 +47,72 @@ import { fileURLToPath } from 'url';
       }  )
          
 
+         for (const data of testCases) {
 
-              
-//          test('create user', async ({page})=>{
+    if (data.ExecuteFlag !== 'Yes') {
+        continue;
+    }
 
-                
-//                    const pimPage = new PIMPage(page);
+    test(
+        `Row ${data["S.No"]} - ${data.ScenarioType}`,
+        async ({ page }) => {
 
-//                    await pimPage.navigateToAddEmployee();
+            const pimPage = new PIMPage(page);
 
-                    
-//  await pimPage.createEmployeeWithLoginDetails('John', 'steve', 'Doe', 'john.doe123aa', 'Password@123');
+            let actualResult = '';
+            let testCaseStatus = 'FAIL';
 
-//                 await   page.waitForTimeout(5000);
+          try {
 
-               
-               
-//                 await  pimPage.save();
+    await pimPage.navigateToAddEmployee();
 
+    await pimPage.createEmployee(data);
 
-
-//                 await expect(pimPage.getSuccessMessage().filter({hasText: 'Successfully Saved'})).toBeVisible();
-
-                  
-
-
-//                 await page.waitForTimeout(5000);
-//          })
-
-        
-//           test('verify employee login', async ({page})=>{
-
-//         const loginPage = new LoginPage(page);
-//            await loginPage.login('Johnadh', 'Manju@1234');
-
-//  })
+    actualResult = await pimPage.save();
 
 
+actualResult = await pimPage.save();
 
-          for(const data of  testcases) {
+if (Array.isArray(actualResult)) {
+    actualResult = actualResult.join(', ');
+}
 
-             if(data.ExecuteFlag!=='Yes') {
-               
-                    continue; // Skip this iteration if the ExecuteFlag is not 'Yes'
-
-             } 
-
-              
-
-             test(`Row ${data["S.No"]}-${data.scenarioType}` ,async ({page}) =>{
+    expect(actualResult).toContain(
+        data["Expected Result"]
+    );
 
 
-                const pimPage= new PIMPage(page);
+    testCaseStatus = "PASS";
+
+}
+catch (error) {
+
+    testCaseStatus = "FAIL";
+
+    actualResult = error.message;
+
+    throw error; // keeps Playwright test failed
+}
+finally {
+
+    await writeExcelData(
+        dataPath,
+        'userCreation',
+        data.rowNumber,
+        actualResult,
+        testCaseStatus
+    );
+}
+        }
+    );
+}
 
 
-                 try{
-                     await pimPage.navigateToAddEmployee();
-
-                     await pimPage.createEmployee(data);
-
-                     await pimPage.save();
-
-
-                     let actualResult = '';
-
-
-                      if(await pimPage.getSuccessMessage().filter({hasText:'Successfully Saved'}).isVisible()) {
-
-                           actualResult= await pimPage.getToastMessage();
-
-                      } 
-
-                       else {
-
-                        actualResult= await pimPage.getErrorMessage();
-                       }
- 
-
-                       
-
-                 } catch(error) {
-
-
-
-
-                 }
-
-
-             }
-             )
-   
           }
 
 
 
 
 
+ );
 
- })
