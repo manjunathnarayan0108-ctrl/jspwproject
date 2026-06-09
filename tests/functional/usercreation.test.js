@@ -71,7 +71,6 @@ import { fileURLToPath } from 'url';
     actualResult = await pimPage.save();
 
 
-actualResult = await pimPage.save();
 
 if (Array.isArray(actualResult)) {
     actualResult = actualResult.join(', ');

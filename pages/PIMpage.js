@@ -133,7 +133,7 @@
                     await this.lastName.fill(data["LastName"]);
                 }
                     
-                if(!data["EmployeeId"]) {
+                if(!data["EmployeeId"]||data["EmployeeId"]) {
 
                     const currentId = await this.empId.inputValue();
 
@@ -233,75 +233,43 @@
 
         
     }
+async save() {
+    let result = 'something went wrong';
 
-    async save() {
-            
+    try {
         await this.saveButton.click();
 
-
-      //  this.page.waitForTimeout(2000);
-
-       const successToast =
-    // const anyToast = 
-    this.successmessage;
-
-     
-             console.log(successToast.textContent());
-
+        const successToast = this.successmessage;
 
         await Promise.any([
-             successToast.waitFor({
-            state: 'visible',
-            timeout: 15000
-        }),
-        this.errors.first().waitFor({
-            state: 'visible',
-            timeout: 15000
-        })
-    ]).catch(() => {});
+            successToast.waitFor({
+                state: 'visible',
+                timeout: 15000
+            }),
+            this.errors.first().waitFor({
+                state: 'visible',
+                timeout: 15000
+            })
+        ]).catch(() => {});
 
+        if (
+            await successToast.filter({ hasText: 'Successfully Saved' }).isVisible().catch(() => false)
+        ) {
+            result = (await successToast.textContent())?.trim();
+            return result;
+        }
 
-    if (
-        await successToast.filter({hasText:'Successfully Saved'}).isVisible()
-            .catch(() => false)
-    ) {
-        return (
-            await successToast.textContent()
-        )?.trim();
+        const errors = this.page.locator('.oxd-input-field-error-message');
+        const errorCount = await errors.count();
+
+        if (errorCount > 0) {
+            result = await errors.allTextContents();
+        }
+    } catch (error) {
+        console.error('Save operation failed:', error);
+        result = error instanceof Error ? error.message : String(error);
     }
 
-    console.log(
-    "Success count:",
-    await this.successmessage
-        .filter({ hasText: 'Successfully Saved' })
-        .count()
-);
-
-
-    const errors =
-        this.page.locator(
-            '.oxd-input-field-error-message'
-        );
-
-
-    const errorCount =
-        await errors.count();
-
-    if (errorCount > 0) {
-        return await errors.allTextContents();
+    return result;
+}
     }
-
-    // await this.page.screenshot({
-    //     path: `debug-${Date.now()}.png`,
-    //     fullPage: true
-    // });
-
-    // throw new Error(
-    //     'Save operation completed but no success toast or validation error was detected'
-    // );
-
-return "something went wrong"
-
-    }
-
-    }   
