@@ -73,8 +73,9 @@ import { fileURLToPath } from 'url';
 
 
 if (Array.isArray(actualResult)) {
-    actualResult = actualResult.join(', ');
+    actualResult = actualResult.join(',');
 }
+
 
     expect(actualResult).toContain(
         data["Expected Result"]
