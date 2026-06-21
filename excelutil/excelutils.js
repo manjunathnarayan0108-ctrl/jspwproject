@@ -2,6 +2,8 @@ import ExcelJs from "exceljs";
 
 export async function getExcelData(filePath, sheetName) {
 
+    
+
     const workbook = new ExcelJs.Workbook();
 
     await workbook.xlsx.readFile(filePath);
@@ -24,6 +26,9 @@ export async function getExcelData(filePath, sheetName) {
         const rowData = {
             rowNumber
         };
+
+        console.log("Headers:");
+headers.forEach(h => console.log(`[${h}]`));
 
         headers.forEach((header, index) => {
 
@@ -75,12 +80,14 @@ export async function writeExcelData(
             actualResultColumn = columnNumber;
         }
 
+
         if (cell.value === "Test case status") {
 
             statusColumn = columnNumber;
         }
     });
 
+    
     workSheet
         .getRow(rowNumber)
         .getCell(actualResultColumn)
