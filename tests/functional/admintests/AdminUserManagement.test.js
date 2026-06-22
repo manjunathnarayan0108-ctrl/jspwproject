@@ -4,7 +4,7 @@ import Sidebar from "../../../pages/sidebar/SidebarComponent.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import AdminNavComponent from "../../../pages/Admin/AdminNavComponent.js";
-import UserManagementUserPage from "../../../pages/Admin/UserManagementAddUser2.js";
+import UserManagementUserPage from "../../../pages/Admin/UserManagementAddUser.js";
 import { LoginPage } from "../../../pages/LoginPage.js";
 
 
@@ -55,7 +55,7 @@ console.log(data);
         // 2. Dynamic Action Routing based on Excel 'TestAction' Column
         switch (String(data.TestAction).trim()) {
 
-  case 'SearchUser':
+  case 'SearchUserByAll':
 
 
     pomResponse =
@@ -72,7 +72,7 @@ console.log(data);
   case 'SearchUserByRole':
 
     pomResponse =
-      await adminUserPage.searchForSystemUsers({
+      await adminUserPage.searchUserByRole({
         UserRole: data.UserRole,
         Status: data.Status
       });
@@ -87,6 +87,8 @@ console.log(data);
       data.Username =
         `User${Date.now()}`;
     }
+
+    
 
 
     pomResponse =

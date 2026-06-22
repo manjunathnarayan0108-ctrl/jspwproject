@@ -15,8 +15,8 @@ class UserManagementUserPage {
     this.passwordInput = page.getByRole('textbox', { name: 'Password', exact: true });
     this.confirmPasswordInput = page.getByRole('textbox', { name: 'Confirm Password' });
  
-    this.dynamicDropdownDiv = page.getByRole('option');
-    this.matchingOption = (employeename)=>page.getByRole('option').filter({hasText: employeename}).first();
+   // this.dynamicDropdownDiv = (name)=>page.getByRole('option').filter({hasText: name}).first();
+    this.matchingOption = (employeename)=>page.locator('oxd-autocomplete-option').filter({hasText: employeename}).first();
     this.InvalidError = page.getByText('Invalid');
 
     // Form Action Buttons
@@ -41,10 +41,14 @@ class UserManagementUserPage {
     }
   }
 
+  
 
 
   // function to select UserRole
   async selectUserRole(userRole) {
+             
+            console.log('inside selectUserRole',userRole);
+
 
      if (!userRole?.trim()) {
     return;
@@ -59,6 +63,9 @@ class UserManagementUserPage {
   // function to Enter Employee Name 
   async enterEmployeeNameandVerfiy(employeename) {
 
+           console.log('inside enterEmployeeNameandVerfiy',employeename);
+
+
     
        if (!employeename?.trim()) {
     return;
@@ -67,80 +74,76 @@ class UserManagementUserPage {
 
 
             console.log('emp name:',employeename)
+
     await this.employeeNameInput.fill(employeename); 
-             await this.page.waitForTimeout(3000);
+
+   // await this.employeeNameInput.press('Tab');
+
+
 
 
         try {
-      const result = await Promise.race([
-  this.matchingOption(employeename)
-    .waitFor({ state: 'visible', timeout: 5000 })
+         
+          const option = this.matchingOption(employeename);
+
+
+     const result = await Promise.any([
+
+  option.waitFor({ state: 'visible', timeout: 10000 })
     .then(() => ({
       type: 'option',
-      element: this.matchingOption(employeename)
-    })),
+      element: option
+    }))
+    .catch(() => Promise.reject()),
 
-  this.dynamicDropdownDiv
-    .waitFor({ state: 'visible', timeout: 5000 })
-    .then(async () => {
-      const text =
-        await this.dynamicDropdownDiv.innerText();
+  this.InvalidError.waitFor({ state: 'visible', timeout: 10000 })
+    .then(() => ({
+      type: 'error'
+    }))
+    .catch(() => Promise.reject()),
 
-      if (
-        text.includes('Searching') ||
-        text.includes('No Records Found')
-      ) {
-        return {
-          type: 'noRecords',
-          message: text
-        };
-      }
-    }),
+  this.page.getByText('No Records Found')
+    .waitFor({ state: 'visible', timeout: 10000 })
+    .then(() => ({
+      type: 'noRecords'
+    }))
+    .catch(() => Promise.reject())
 
-  this.InvalidError
-    .waitFor({ state: 'visible', timeout: 5000 })
-    .then(() => ({ type: 'error' }))
 ]);
-      // CORRECTION: Brackets and control flow un-nested/realigned so all branches are reachable
-      if (result?.type === 'option') {
-
-         await this.page.waitForTimeout(3000);
-
-        await result.element.click();
-        return {
-          success: true,
-          employeeName: employeename
-        };
-      }
-
-      if (result?.type === 'noRecords') {
-                 await this.page.waitForTimeout(3000);
-
-        return {
-          success: false,
-          actualResult: 'Employee does not exist'
-        };
-      }
-
-      if (result?.type === 'error') {
-                 await this.page.waitForTimeout(3000);
 
 
-        return {
-          success: false,
-          actualResult: 'Invalid Employee'
-        };
-      }
 
-      return { success: false, actualResult: 'Unknown selection state' };
+if (result.type === 'option') {
 
-    } catch (error) {
-      throw new Error(`Employee selection failed: ${error.message}`);
-    }
+    await result.element.click();
+
+    return {
+        success: true,
+        employeeName: employeename
+    };
+}
+
+if (result.type === 'noRecords') {
+
+    return {
+        success: false,
+        actualResult: 'No Records Found'
+    };
+}
+
+if (result.type === 'error') {
+
+    return {
+        success: false,
+        actualResult: 'Invalid Employee'
+    };
   }
 
-
-
+        } catch (error) {
+            throw error;
+        }
+      }
+  
   // function to select Status 
   async selectStatus(statusValue) {
 
@@ -180,23 +183,35 @@ class UserManagementUserPage {
 // function to search for Systemusers
 async searchForSystemUsers(data) {
 
-  console.log(data);
+  console.log('data:', data);
 
   if (data.Username) {
+      console.log('username filled');
     await this.enterUserName(data.Username);
   }
 
-  await this.page.waitForTimeout(3000);
 
-  if (data.UserRole) {
+
+
+ if (data.UserRole) {
+
+      console.log("user role filled");
     await this.selectUserRole(data.UserRole);
   }
 
   if (data.Status) {
+
+      console.log('status filled');
     await this.selectStatus(data.Status);
   }
 
-  await this.page.waitForTimeout(3000);
+  
+//   const option = this.matchingOption(data.EmployeeName);
+
+// await option.waitFor({ state: 'visible', timeout: 10000 });
+
+// await option.click();
+
 
   let empResult = { success: true };
 
@@ -212,14 +227,26 @@ async searchForSystemUsers(data) {
     }
   }
 
-  await this.clickOnSearch();
+
+
+  //await this.clickOnSearch();
 
   await this.page.waitForTimeout(3000);
 
+   
+  if(empResult.success) {
+
   return await this.verifyResults(
     data.Username
-  );
+  )
+
+} else {
+
+       return empResult;
+}
+
 }  
+
 
   
 
@@ -284,7 +311,37 @@ async searchForSystemUsers(data) {
     };
   }
 
-  
+   async searchUserByRole({role,status}) {
+
+
+    await this.selectUserRole(role);
+
+     await this.clickOnSearch();
+
+ const recordSummary = await this.page.locator('span',{hasText:"Records Found"})
+         .first().textContent();
+
+     let   recordCount= recordSummary.match(/\d+/g).map(Number);
+                    
+      console.log('recordCount:',recordCount[0]);
+
+       await this.page.waitForTimeout(3000);
+
+
+
+             if(recordCount[0] > 0) {
+                return {
+                    success: true,
+                    actualResult: `Records Found`
+                };
+             } else {
+                return {
+                    success: false,
+                    actualResult: 'No Records Found'
+                };
+             }
+     
+   }
 
   // function to enter password 
   // CORRECTION: Now passes the actual string password down to the Playwright .fill() action

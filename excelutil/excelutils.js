@@ -27,8 +27,8 @@ export async function getExcelData(filePath, sheetName) {
             rowNumber
         };
 
-        console.log("Headers:");
-headers.forEach(h => console.log(`[${h}]`));
+//         console.log("Headers:");
+// headers.forEach(h => console.log(`[${h}]`));
 
         headers.forEach((header, index) => {
 
