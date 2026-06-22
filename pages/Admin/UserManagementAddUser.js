@@ -11,12 +11,12 @@ class UserManagementUserPage {
     
     this.employeeNameInput = page.getByPlaceholder('Type for hints...');
     this.statusDropdown = page.locator('.oxd-input-group', { hasText: 'Status' }).locator('.oxd-select-wrapper');
+     this.addUserDropdown= 
     this.usernameInput =  page.locator('xpath=//label[text()="Username"]/../following-sibling::div//input');
-    this.passwordInput = page.getByRole('textbox', { name: 'Password', exact: true });
-    this.confirmPasswordInput = page.getByRole('textbox', { name: 'Confirm Password' });
- 
+    this.passwordInput = page.locator("//input[@type='password']").first();
+    this.confirmPasswordInput = page.locator("//input[@type='password']").nth(1);
    // this.dynamicDropdownDiv = (name)=>page.getByRole('option').filter({hasText: name}).first();
-    this.matchingOption = (employeename)=>page.locator('oxd-autocomplete-option').filter({hasText: employeename}).first();
+    this.matchingOption = (employeename)=>page.getByRole('option',{name:`${employeename}`}).first();
     this.InvalidError = page.getByText('Invalid');
 
     // Form Action Buttons
@@ -53,11 +53,25 @@ class UserManagementUserPage {
      if (!userRole?.trim()) {
     return;
   }
+
+
+
     console.log('userRole ?',userRole);
+
+     console.log('userRole',userRole);
+
     await this.userRoleDropdown.click();
+            console.log('user role clicked')
     const optionToSelect = this.page.getByRole('listbox').getByRole('option', { name: userRole, exact: false });
+             
+          console.log(optionToSelect.textContent());
+
+
+
     await optionToSelect.click();
   }
+
+
 
 
   // function to Enter Employee Name 
@@ -65,11 +79,12 @@ class UserManagementUserPage {
 
            console.log('inside enterEmployeeNameandVerfiy',employeename);
 
-
     
        if (!employeename?.trim()) {
     return;
   }
+
+
 
 
 
@@ -277,17 +292,25 @@ async searchForSystemUsers(data) {
     };
   }
 
+
+
   // function to add data
   async addSytemUser(data) {
     await this.addButton.click();
     await expect(this.page).toHaveURL(/.*saveSystemUser.*/); // CORRECTION: Replaced static string matching with a flexible regex path
     await expect(this.userRoleDropdown).toBeVisible({ timeout: 10000 });
 
-    await this.selectUserRole(data["User Role"]);
+    await this.selectUserRole(data.UserRole);
     await this.enterUserName(data["Username"]);
-    await this.enterEmployeeNameandVerfiy(data.EmployeeName);
     await this.enterPassword(data.Password);
+
+     await this.selectStatus(data.UserStatus)
+
+      await this.page.waitForTimeout(5000);
+     console.log(data.UserStatus)
     await this.enterConfirmPassword(data.ConfirmPassword);
+
+    await this.enterEmployeeNameandVerfiy(data.EmployeeName);
 
              await this.page.waitForTimeout(3000);
 
@@ -310,6 +333,8 @@ async searchForSystemUsers(data) {
       actualResult: 'Save failed'
     };
   }
+
+
 
    async searchUserByRole({role,status}) {
 
