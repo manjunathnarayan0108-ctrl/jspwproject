@@ -19,6 +19,7 @@ const testCases = await getExcelData(dataPath, SHEET_NAME);
 test.setTimeout(120000);
 
 
+
 test.describe('User Management Dynamic Tests', () => {
 
   test.beforeEach('Navigate to dashboard and enter application URL', async ({ page }) => {
@@ -96,7 +97,7 @@ console.log(data);
         UserRole: data.UserRole,
         EmployeeName: data.EmployeeName,
         Username: data.Username,
-        Status: data.Status,
+        Status: data.UserStatus,
         Password: data.Password,
         ConfirmPassword: data.ConfirmPassword
       });
@@ -174,6 +175,21 @@ console.log(data);
         data.EmployeeName
       );
 
+         if(data.UserStatus){
+
+           await adminUserPage.selectStatus(data.UserStatus);
+
+         }
+
+          if(data.UserRole){
+
+            await adminUserPage.selectUserRole(data.UserRole)
+          }
+
+
+
+
+      //await this.page.waitForTimeout(4000);
     pomResponse =
       await adminUserPage.clickResetButton();
 
@@ -216,6 +232,8 @@ console.log(data);
         if (pomResponse && typeof pomResponse === 'object') {
           outputText = pomResponse.actualResult || "";
           isSuccess = pomResponse.success;
+
+           console.log('output text:',outputText)
         } else {
           // If POM returns a primitive true/false boolean value
           isSuccess = !!pomResponse;

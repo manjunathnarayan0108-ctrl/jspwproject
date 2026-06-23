@@ -34,7 +34,7 @@ export async function getExcelData(filePath, sheetName) {
 
             if (
                 header === "Actual Result" ||
-                header === "Status" ||
+              
                 header === "Test case status"
             ) {
                 return;

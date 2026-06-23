@@ -179,13 +179,27 @@ if (result.type === 'error') {
 
   // function to reset the entered data 
   async clickResetButton() {
+
+     console.log('inside the click reset button');
+
+      await this.page.waitForTimeout(4000);
     await this.resetButton.click();
+
+   
+
     const result = await this.verifyAllFieldsReset();
+                
+    
+
     return {
       success: result,
       actualResult: result ? 'All fields reset successfully' : 'Reset failed'
     };
+
   }
+
+
+
 
 
 
@@ -296,6 +310,7 @@ async searchForSystemUsers(data) {
 
   // function to add data
   async addSytemUser(data) {
+    console.log('data',data)
     await this.addButton.click();
     await expect(this.page).toHaveURL(/.*saveSystemUser.*/); // CORRECTION: Replaced static string matching with a flexible regex path
     await expect(this.userRoleDropdown).toBeVisible({ timeout: 10000 });
@@ -304,10 +319,11 @@ async searchForSystemUsers(data) {
     await this.enterUserName(data["Username"]);
     await this.enterPassword(data.Password);
 
-     await this.selectStatus(data.UserStatus)
+     await this.selectStatus(data.Status)
 
       await this.page.waitForTimeout(5000);
-     console.log(data.UserStatus)
+     console.log('userstatus',data.UserStatus);
+
     await this.enterConfirmPassword(data.ConfirmPassword);
 
     await this.enterEmployeeNameandVerfiy(data.EmployeeName);
