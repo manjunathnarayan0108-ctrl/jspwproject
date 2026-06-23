@@ -17,7 +17,7 @@ class UserManagementUserPage {
     this.confirmPasswordInput = page.locator("//input[@type='password']").nth(1);
    // this.dynamicDropdownDiv = (name)=>page.getByRole('option').filter({hasText: name}).first();
     this.matchingOption = (employeename)=>page.getByRole('option',{name:`${employeename}`}).first();
-    this.InvalidError = page.getByText('Invalid');
+    this.InvalidError = page.getByText('Invalid')
 
     // Form Action Buttons
     this.cancelButton = page.getByRole('button', { name: 'Cancel' });
