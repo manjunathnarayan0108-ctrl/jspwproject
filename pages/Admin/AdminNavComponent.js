@@ -16,6 +16,7 @@ class AdminNavComponent {
     this.nationalitiesLink = page.getByRole('link', { name: 'Nationalities' });
   }
 
+  
   // Navigation Methods
   async goToUserManagement() {
     await this.userManagementTab.click();

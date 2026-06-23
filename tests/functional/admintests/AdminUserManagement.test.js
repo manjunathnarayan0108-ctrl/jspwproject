@@ -108,11 +108,11 @@ console.log(data);
   case 'AddDuplicateUser':
 
     pomResponse =
-      await adminUserPage.addSystemUser({
+      await adminUserPage.addSytemUser({
         UserRole: data.UserRole,
         EmployeeName: data.EmployeeName,
         Username: data.Username,
-        Status: data.Status,
+        Status: data.UserStatus,
         Password: data.Password,
         ConfirmPassword: data.ConfirmPassword
       });
