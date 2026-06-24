@@ -162,7 +162,7 @@ console.log(data);
         ConfirmPassword: data.ConfirmPassword
       });
 
-    break
+    break;
 
 
   case 'ResetFilter':
