@@ -67,14 +67,9 @@
                 );
 
                 
-                this.statusEnabledRadio= page.locator("//input[@type='radio' and @value='1']");
-
-                this.statusDisabledRadio= page.locator("//input[@type='radio' and @value='2']");
-
-            this.password =
-                page.locator(
-                    "//label[text()='Password']/parent::div/following-sibling::div//input"
-                );
+                this.statusEnabledRadio= page.locator('label').filter({ hasText: 'Enabled' })
+                this.statusDisabledRadio=page.locator('label').filter({ hasText: 'Disabled' })
+                  
 
 
             this.confirmPassword =
@@ -82,11 +77,20 @@
                     "//label[text()='Confirm Password']/parent::div/following-sibling::div//input"
                 );
 
+               
+
+               // this.page.getByLabel('Confirm Password*', { exact: true });
+                  
+  this.password =  page.locator(
+                    "//label[text()='Password']/parent::div/following-sibling::div//input"
+                );
+
+  
+  
+  //this.page.getByLabel('Password*', { exact: true });
 
                 this.errors =
-        this.page.locator(
-            '.oxd-input-field-error-message'
-        );
+        this.page.locator('.oxd-input-field-error-message');
 
             this.saveButton =
                 page.getByRole('button', {

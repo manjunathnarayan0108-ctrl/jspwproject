@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+      "smoke": "playwright test usercreation.test.js",
+    "regression": "playwright test AdminUserManagement.test.js",
+    "all": "playwright test"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
