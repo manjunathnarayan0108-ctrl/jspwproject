@@ -113,13 +113,15 @@ class UserManagementUserPage {
 
   this.InvalidError.waitFor({ state: 'visible', timeout: 10000 })
     .then(() => ({
-      type: 'error'
+
+      type: 'error',
     }))
     .catch(() => Promise.reject()),
 
   this.page.getByText('No Records Found')
     .waitFor({ state: 'visible', timeout: 10000 })
     .then(() => ({
+            element:option,
       type: 'noRecords'
     }))
     .catch(() => Promise.reject())
@@ -153,6 +155,7 @@ if (result.type === 'error') {
         actualResult: 'Invalid Employee'
     };
   }
+
 
         } catch (error) {
             throw error;
@@ -189,7 +192,7 @@ if (result.type === 'error') {
 
     const result = await this.verifyAllFieldsReset();
                 
-    
+
 
     return {
       success: result,
@@ -307,6 +310,50 @@ async searchForSystemUsers(data) {
   }
 
 
+   async invalidEmployee(data){
+
+       console.log('data',data)
+
+       await this.addButton.click();
+
+
+
+       await expect(this.page).toHaveURL(/.*saveSystemUser.*/);
+
+       await expect(this.userRoleDropdown).toBeVisible({timeout:10000})
+
+
+       await this.selectUserRole(data.UserRole);
+    await this.enterUserName(data["Username"]);
+    await this.enterPassword(data.Password);
+
+     await this.selectStatus(data.Status)
+
+
+         await this.enterConfirmPassword(data.ConfirmPassword);
+
+      const empResult =
+    await this.enterEmployeeNameandVerfiy(
+        data.EmployeeName
+    );
+
+if (!empResult.success) {
+
+    await this.saveButton.click();
+
+    const invalidMessage =
+        await this.InvalidError.textContent();
+
+    return {
+        success:true,
+        actualResult: invalidMessage?.trim()
+    };
+}
+
+
+
+   }
+
 
   // function to add data
   async addSytemUser(data) {
@@ -319,7 +366,9 @@ async searchForSystemUsers(data) {
     await this.enterUserName(data["Username"]);
     await this.enterPassword(data.Password);
 
-     await this.selectStatus(data.Status)
+     await this.selectStatus(data.Status);
+
+
 
       await this.page.waitForTimeout(5000);
      console.log('userstatus',data.UserStatus);
@@ -349,6 +398,8 @@ async searchForSystemUsers(data) {
       actualResult: 'Save failed'
     };
   }
+
+  
 
 
 

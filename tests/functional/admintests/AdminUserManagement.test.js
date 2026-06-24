@@ -123,11 +123,11 @@ console.log(data);
   case 'InvalidEmployee':
 
     pomResponse =
-      await adminUserPage.addSystemUser({
+      await adminUserPage.invalidEmployee({
         UserRole: data.UserRole,
         EmployeeName: data.EmployeeName,
         Username: data.Username,
-        Status: data.Status,
+        Status:data.UserStatus,
         Password: data.Password,
         ConfirmPassword: data.ConfirmPassword
       });
@@ -138,7 +138,7 @@ console.log(data);
   case 'RequiredUsername':
 
     pomResponse =
-      await adminUserPage.addSystemUser({
+      await adminUserPage.addSytemUser({
         UserRole: data.UserRole,
         EmployeeName: data.EmployeeName,
         Username: '',
@@ -153,7 +153,7 @@ console.log(data);
   case 'PasswordMismatch':
 
     pomResponse =
-      await adminUserPage.addSystemUser({
+      await adminUserPage.addSytemUser({
         UserRole: data.UserRole,
         EmployeeName: data.EmployeeName,
         Username: data.Username,
