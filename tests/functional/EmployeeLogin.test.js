@@ -12,11 +12,7 @@ import { LoginPage } from '../../pages/LoginPage.js';
 
 
      test.beforeEach('launch the browser and enter the url', async ({page})=>{
-
-
-        await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-
-           
+        await page.goto('/');
      })
 
 

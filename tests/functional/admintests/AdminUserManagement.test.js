@@ -23,7 +23,7 @@ test.setTimeout(120000);
 test.describe('User Management Dynamic Tests', () => {
 
   test.beforeEach('Navigate to dashboard and enter application URL', async ({ page }) => {
-    await page.goto('https://opensource-demo.orangehrmlive.com/');
+    await page.goto('/');
     const login = new LoginPage(page);
     await login.login('Admin', 'admin123');
   });

@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
- import { LoginPage } from '../../pages/LoginPage.js';
+ import { LoginPage } from '../../../pages/LoginPage.js';
 
- import { PIMPage } from '../../pages/PIMPage.js';
+ import { PIMPage } from '../../../pages/PIMPage.js';
 
   test.setTimeout(200000);
 
@@ -11,7 +11,7 @@ import { test, expect } from '@playwright/test';
  import {
 
    getExcelData,writeExcelData
- } from '../../excelutil/excelutils.js';
+ } from '../../../excelutil/excelutils.js';
 
 
 
