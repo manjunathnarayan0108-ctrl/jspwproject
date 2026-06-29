@@ -60,9 +60,21 @@ export async function writeExcelData(
     testCaseResult
 ) {
 
+    console.log('filePath:', filePath);
+console.log('sheetName:', sheetName);
+console.log('rowNumber:', rowNumber);
+console.log('actualResult:', actualResult);
+console.log('testCaseResult:', testCaseResult);
+
+console.log('---------------')
+
     const workBook = new ExcelJs.Workbook();
 
     await workBook.xlsx.readFile(filePath);
+
+          console.log(filePath);
+
+
 
     const workSheet =
         workBook.getWorksheet(sheetName.trim());
@@ -97,6 +109,11 @@ export async function writeExcelData(
         .getRow(rowNumber)
         .getCell(statusColumn)
         .value = testCaseResult;
+
+
+        console.log('actual result',actualResultColumn);
+
+        console.log('status column',statusColumn)
 
     await workBook.xlsx.writeFile(filePath);
 }

@@ -8,10 +8,7 @@ import { test, expect } from '@playwright/test';
 
 
 
- import {
-
-   getExcelData,writeExcelData
- } from '../../../excelutil/excelutils.js';
+ import {getExcelData,writeExcelData} from '../../../excelutil/excelutils.js';
 
 
 
@@ -29,7 +26,7 @@ import { fileURLToPath } from 'url';
    console.log("Current Directory:", __dirname); // Debugging line to verify the current directory
 
       
-      const dataPath= path.resolve(__dirname,'../../datasheet.xlsx');
+      const dataPath= path.resolve(__dirname,'../../../datasheet.xlsx');
 
          console.log("Data Path:", dataPath); // Debugging line to verify the path to the Excel file
            

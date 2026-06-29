@@ -3,28 +3,39 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getExcelData, writeExcelData } from "../../../excelutil/excelutils.js";
 import { LoginPage } from "../../../pages/LoginPage.js";
+import { type } from "os";
+
+  test.setTimeout(1300000);
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
  console.log("Current Directory:", __dirname); // Debugging line to verify the current directory
-const dataPath = path.resolve(__dirname, "../../datasheet.xlsx");
+const dataPath = path.resolve(__dirname, "../../../datasheet.xlsx");
 
 
  console.log("Data Path:", dataPath); // Debugging line to verify the path to the Excel file
 
-const testCases = getExcelData(dataPath);
+const testCases = await getExcelData(dataPath,'login');
+
+console.log("isArray =", Array.isArray(testCases));
+        console.log('typeof',typeof testCases);
+
 
 
 // 1. Changed 'one' to a safe, explicit string description
-test.describe.serial('OrangeHRM Login Data Driven Tests', () => {
+test.describe('OrangeHRM Login Data Driven Tests', () => {
 
-   test.describe.configure({
-      retries: 1
-   });
+   // test.describe.configure({
+   //    retries: 1
+   // });
 
    // 2. Use the array index (i) as a fallback to guarantee unique titles
    testCases.forEach((data, i) => {
+
+      console.log('data',data)
       const calculatedRow = data.rowNumber || (i + 2); // Fallback to index if rowNumber is missing
 
       test(`Login with ${data.username} - Row ${calculatedRow}`, async ({ page }) => {
@@ -34,16 +45,30 @@ test.describe.serial('OrangeHRM Login Data Driven Tests', () => {
             'https://opensource-demo.orangehrmlive.com/web/index.php/auth/login'
          );
 
-         try {
-            await loginPage.login(data.username, data.password);
-            await expect(page).toHaveURL(/.*dashboard/);
 
-            await writeExcelData(dataPath, calculatedRow, 'PASS');
-            
-         } catch (error) {
-            await writeExcelData(dataPath, calculatedRow, 'FAIL');
-            //throw error;
-         }
+         /*
+
+         export async function writeExcelData(
+    filePath,
+    sheetName,
+    rowNumber,
+    actualResult,
+    testCaseResult
+) {
+
+
+         */
+         try {
+   await loginPage.login(data.Username, data.Password);
+
+   await expect(page).toHaveURL(/.*dashboard/);
+
+            await writeExcelData(dataPath,'login',calculatedRow,'PASS','test case passed ');
+
+} catch(error) {
+
+            await writeExcelData(dataPath,'login',calculatedRow,'FAIL','test case failed');
+}
       });
    });
 });

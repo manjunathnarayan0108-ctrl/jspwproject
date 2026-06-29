@@ -1,88 +1,88 @@
+
+
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
-dotenv.config();
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+// 1. Try standard dotenv load first
+const envPath = path.resolve(__dirname, '.env');
+dotenv.config({ path: envPath });
+
+const result = dotenv.config({ path: envPath });
+
+console.log('DOTENV RESULT:', result);
+console.log('PATH:', envPath);
+console.log('BROWSER:', process.env.BROWSER);
+
+
+
+// 2. BULLETPROOF FALLBACK: If dotenvx stripped it, parse the file manually
+if (!process.env.BROWSER && fs.existsSync(envPath)) {
+  const envConfig = dotenv.parse(fs.readFileSync(envPath));
+  for (const k in envConfig) {
+    process.env[k] = envConfig[k];
+  }
+}
+
+
+
+// Define all available browser configurations map
+const allProjects = {
+  chromium: {
+    name: 'chromium',
+    use: { ...devices['Desktop Chrome'] },
+  },
+  firefox: {
+    name: 'firefox',
+    use: { ...devices['Desktop Firefox'] },
+  },
+  webkit: {
+    name: 'webkit',
+    use: { ...devices['Desktop Safari'] },
+  },
+};
+
+
+
+// Determine which projects to load based on the BROWSER environment variable
+const getDynamicProjects = () => {
+  const targetBrowser = process.env.BROWSER?.trim();
+
+  console.log(`Playwright active BROWSER env variable: "${targetBrowser}"`);
+
+  if (targetBrowser && allProjects[targetBrowser as keyof typeof allProjects]) {
+    return [allProjects[targetBrowser as keyof typeof allProjects]];
+  }
+
+  console.log(`No specific browser matched. Running ALL major browsers.`);
+  return Object.values(allProjects);
+};
+
+
+
+
 export default defineConfig({
-  testDir: `./tests/${process.env.SUITE||'smoke'}`,
-  /* Run tests in files in parallel */
+  testDir: `./tests`,
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 1,
-  /* Opt out of parallel tests on CI. */
+  retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
     baseURL: process.env.URL || 'https://opensource-demo.orangehrmlive.com/',
-
-    headless: process.env.HEADLESS ==='true',
-
-
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    headless: process.env.HEADLESS === 'true',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
 
-
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  /* Dynamically sets projects based on .env */
+  projects: getDynamicProjects(),
 });
+
+

@@ -370,7 +370,7 @@ if (!empResult.success) {
 
 
 
-      await this.page.waitForTimeout(5000);
+      //await this.page.waitForTimeout(5000);
      console.log('userstatus',data.UserStatus);
 
     await this.enterConfirmPassword(data.ConfirmPassword);
@@ -399,7 +399,7 @@ if (!empResult.success) {
     };
   }
 
-  
+
 
 
 
