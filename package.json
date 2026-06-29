@@ -4,7 +4,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "smoke": "playwright test tests/functional/admintests",
+    "smoke": "playwright test tests/functional/admintests tests/functional/login",
     "regression": "playwright test tests/functional/usercreation",
     "all": "playwright test"
   },

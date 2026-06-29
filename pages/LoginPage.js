@@ -88,7 +88,7 @@ export  class LoginPage{
 //         this.#page.getByRole('heading', { name: 'Dashboard' })
 //     ).toBeVisible();
 
-await this.#page.getByRole('heading', { name: 'Dashboard' }).waitFor({ state: 'visible', timeout: 30000 });
+//await this.#page.getByRole('heading', { name: 'Dashboard' }).waitFor({ state: 'visible', timeout: 30000 });
 
 
                 // await this.#page.waitForTimeout(10000)

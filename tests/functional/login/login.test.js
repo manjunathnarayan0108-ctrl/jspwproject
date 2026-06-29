@@ -38,7 +38,7 @@ test.describe('OrangeHRM Login Data Driven Tests', () => {
       console.log('data',data)
       const calculatedRow = data.rowNumber || (i + 2); // Fallback to index if rowNumber is missing
 
-      test(`Login with ${data.username} - Row ${calculatedRow}`, async ({ page }) => {
+      test(`Login with ${data.Username} - Row ${calculatedRow}`, async ({ page }) => {
          const loginPage = new LoginPage(page);
 
          await page.goto(
