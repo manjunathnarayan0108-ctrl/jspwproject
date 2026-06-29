@@ -26,6 +26,9 @@ export  class LoginPage{
 
         this.#loginButton= page.getByRole('Button',{name:'Login'});
 
+         this.loginError = page.locator('.oxd-alert-content-text');
+
+
       }
 
 

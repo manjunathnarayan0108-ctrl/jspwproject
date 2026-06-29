@@ -58,16 +58,45 @@ test.describe('OrangeHRM Login Data Driven Tests', () => {
 
 
          */
-         try {
-   await loginPage.login(data.Username, data.Password);
+         if (data["Expected Result"] === "PASS") {
 
-   await expect(page).toHaveURL(/.*dashboard/);
+    await loginPage.login(
+        data.Username,
+        data.Password
+    );
 
-            await writeExcelData(dataPath,'login',calculatedRow,'PASS','test case passed ');
+    await expect(page).toHaveURL(/.*dashboard/);
 
-} catch(error) {
+    await writeExcelData(
+        dataPath,
+        'login',
+        calculatedRow,
+        'Login Successful',
+        'PASS'
+    );
 
-            await writeExcelData(dataPath,'login',calculatedRow,'FAIL','test case failed');
+} else {
+
+    await loginPage.login(
+        data.Username,
+        data.Password
+    );
+
+    const errorMessage =
+        await page.locator('.oxd-alert-content-text')
+            .textContent();
+
+    await expect(
+        page.locator('.oxd-alert-content-text')
+    ).toContainText('Invalid credentials');
+
+    await writeExcelData(
+        dataPath,
+        'login',
+        calculatedRow,
+        errorMessage,
+        'PASS'
+    );
 }
       });
    });
